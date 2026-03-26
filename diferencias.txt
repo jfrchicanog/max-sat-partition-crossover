@@ -1,0 +1,1571 @@
+Only in repo_original: .git
+Only in ./code: EmbeddedLandscape_maxsat.o
+Only in ./code: Encoder.o
+Only in ./code: Main.o
+Only in ./code: MaxSAT.o
+Only in ./code: MaxSATFormula.o
+Only in ./code: MaxSATFormulaExtended.o
+diff -r repo_original/code/MaxSAT_Partition.h ./code/MaxSAT_Partition.h
+1,151c1,151
+< /*!
+<  * \author Vasco Manquinho - vmm@sat.inesc-id.pt
+<  *
+<  * @section LICENSE
+<  *
+<  * Open-WBO, Copyright (c) 2013-2017, Ruben Martins, Vasco Manquinho, Ines Lynce
+<  *
+<  * Permission is hereby granted, free of charge, to any person obtaining a copy
+<  * of this software and associated documentation files (the "Software"), to deal
+<  * in the Software without restriction, including without limitation the rights
+<  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+<  * copies of the Software, and to permit persons to whom the Software is
+<  * furnished to do so, subject to the following conditions:
+<  *
+<  * The above copyright notice and this permission notice shall be included in
+<  * all copies or substantial portions of the Software.
+<  *
+<  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+<  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+<  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+<  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+<  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+<  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+<  * SOFTWARE.
+<  *
+<  */
+< 
+< #ifndef MAXSAT_PARTITION_H
+< #define MAXSAT_PARTITION_H
+< 
+< #include "MaxSAT.h"
+< 
+< #include "graph/Graph.h"
+< #include "graph/Graph_Communities.h"
+< 
+< #include <gmpxx.h>
+< 
+< using NSPACE::Var;
+< 
+< namespace openwbo {
+< 
+< enum graphType_ { VIG_GRAPH = 0, CVIG_GRAPH = 1, RES_GRAPH = 2 };
+< 
+< typedef struct {
+<   vec<int> vars;
+<   vec<int> sclauses;
+<   vec<int> hclauses;
+< } Partition;
+< 
+< class MaxSAT_Partition : public MaxSAT {
+< 
+< public:
+<   MaxSAT_Partition();
+<   ~MaxSAT_Partition();
+< 
+<   void split(int mode, int graphType = RES_GRAPH); // Default Value
+< 
+<   // Set number of Random Partitions
+<   void setRandomPartitions(int n) { _nRandomPartitions = n; }
+<   int getRandomPartitions() { return _nRandomPartitions; }
+< 
+<   // Set random seed
+<   void setRandomSeed(int n) { _randomSeed = n; }
+<   int getRandomSeed() { return _randomSeed; }
+< 
+<   double getModularity() { return _gc.getModularity(); }
+<   int nPartitions() { return _nPartitions; }
+<   int varPartition(Var v) { return _graphMappingVar[v]; }
+<   int hardClausePartition(int index) { return _graphMappingHard[index]; }
+<   int softClausePartition(int index) {
+<     if (index >= maxsat_formula->nSoft())
+<       return 0;
+<     else
+<       return _graphMappingSoft[index];
+<   }
+< 
+<   int nPartitionVars(int index) { return _partitions[index].vars.size(); }
+<   int nPartitionSoft(int index) { return _partitions[index].sclauses.size(); }
+<   int nPartitionHard(int index) { return _partitions[index].hclauses.size(); }
+< 
+<   const vec<int> &communityVars(int index) { return _partitions[index].vars; }
+<   const vec<int> &communitySoft(int index) {
+<     return _partitions[index].sclauses;
+<   }
+<   const vec<int> &communityHard(int index) {
+<     return _partitions[index].hclauses;
+<   }
+< 
+<   const vec<int> &adjacentPartitions(int index) {
+<     return _gc.adjCommunities(index);
+<   }
+<   const vec<double> &adjacentPartitionWeights(int index) {
+<     return _gc.adjCommunityWeights(index);
+<   }
+< 
+<   mpq_class *computeSparsity() {
+<     mpq_class *h_val_pointer = new mpq_class("0", 10);
+< 
+<     for (int i = 0; i < nPartitions(); ++i) {
+<       *h_val_pointer += adjacentPartitions(i).size();
+<     }
+<     *h_val_pointer /= nPartitions() * nPartitions();
+< 
+<     return h_val_pointer;
+<   }
+< 
+<   int nVertexes() { return _graph->nVertexes(); }
+<   int nEdges() { return _graph->nEdges(); }
+< 
+< protected:
+<   void init();
+< 
+<   void splitRandom();
+< 
+<   void buildPartitions(int graphType);
+<   void buildSinglePartition();
+<   void buildVIGPartitions();
+<   void buildCVIGPartitions();
+<   void buildRESPartitions();
+< 
+<   Graph *buildGraph(bool weighted, int graphType);
+<   Graph *buildVIGGraph(bool weighted);
+<   Graph *buildCVIGGraph(bool weighted);
+<   Graph *buildRESGraph(bool weighted);
+< 
+<   int unassignedLiterals(vec<Lit> &sc);
+<   bool isUnsatisfied(vec<Lit> &sc);
+< 
+<   int markUnassignedLiterals(vec<Lit> &c, int *markedLits, bool v);
+< 
+<   void printClause(vec<Lit> &sc);
+< 
+< protected:
+<   Solver *_solver;
+< 
+<   vec<int> _graphMappingVar;
+<   vec<int> _graphMappingHard;
+<   vec<int> _graphMappingSoft;
+< 
+<   int _randomSeed;
+<   int _nRandomPartitions;
+<   int _nPartitions;
+<   vec<Partition> _partitions;
+< 
+<   Graph *_graph;
+<   Graph_Communities _gc;
+< };
+< 
+< } // namespace openwbo
+< 
+< #endif // MAXSAT_PARTITION_H
+---
+> /*!
+>  * \author Vasco Manquinho - vmm@sat.inesc-id.pt
+>  *
+>  * @section LICENSE
+>  *
+>  * Open-WBO, Copyright (c) 2013-2017, Ruben Martins, Vasco Manquinho, Ines Lynce
+>  *
+>  * Permission is hereby granted, free of charge, to any person obtaining a copy
+>  * of this software and associated documentation files (the "Software"), to deal
+>  * in the Software without restriction, including without limitation the rights
+>  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+>  * copies of the Software, and to permit persons to whom the Software is
+>  * furnished to do so, subject to the following conditions:
+>  *
+>  * The above copyright notice and this permission notice shall be included in
+>  * all copies or substantial portions of the Software.
+>  *
+>  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+>  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+>  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+>  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+>  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+>  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+>  * SOFTWARE.
+>  *
+>  */
+> 
+> #ifndef MAXSAT_PARTITION_H
+> #define MAXSAT_PARTITION_H
+> 
+> #include "MaxSAT.h"
+> 
+> #include "graph/Graph.h"
+> #include "graph/Graph_Communities.h"
+> 
+> #include <gmpxx.h>
+> 
+> using NSPACE::Var;
+> 
+> namespace openwbo {
+> 
+> enum graphType_ { VIG_GRAPH = 0, CVIG_GRAPH = 1, RES_GRAPH = 2 };
+> 
+> typedef struct {
+>   vec<int> vars;
+>   vec<int> sclauses;
+>   vec<int> hclauses;
+> } Partition;
+> 
+> class MaxSAT_Partition : public MaxSAT {
+> 
+> public:
+>   MaxSAT_Partition();
+>   ~MaxSAT_Partition();
+> 
+>   void split(int mode, int graphType = RES_GRAPH); // Default Value
+> 
+>   // Set number of Random Partitions
+>   void setRandomPartitions(int n) { _nRandomPartitions = n; }
+>   int getRandomPartitions() { return _nRandomPartitions; }
+> 
+>   // Set random seed
+>   void setRandomSeed(int n) { _randomSeed = n; }
+>   int getRandomSeed() { return _randomSeed; }
+> 
+>   double getModularity() { return _gc.getModularity(); }
+>   int nPartitions() { return _nPartitions; }
+>   int varPartition(Var v) { return _graphMappingVar[v]; }
+>   int hardClausePartition(int index) { return _graphMappingHard[index]; }
+>   int softClausePartition(int index) {
+>     if (index >= maxsat_formula->nSoft())
+>       return 0;
+>     else
+>       return _graphMappingSoft[index];
+>   }
+> 
+>   int nPartitionVars(int index) { return _partitions[index].vars.size(); }
+>   int nPartitionSoft(int index) { return _partitions[index].sclauses.size(); }
+>   int nPartitionHard(int index) { return _partitions[index].hclauses.size(); }
+> 
+>   const vec<int> &communityVars(int index) { return _partitions[index].vars; }
+>   const vec<int> &communitySoft(int index) {
+>     return _partitions[index].sclauses;
+>   }
+>   const vec<int> &communityHard(int index) {
+>     return _partitions[index].hclauses;
+>   }
+> 
+>   const vec<int> &adjacentPartitions(int index) {
+>     return _gc.adjCommunities(index);
+>   }
+>   const vec<double> &adjacentPartitionWeights(int index) {
+>     return _gc.adjCommunityWeights(index);
+>   }
+> 
+>   mpq_class *computeSparsity() {
+>     mpq_class *h_val_pointer = new mpq_class("0", 10);
+> 
+>     for (int i = 0; i < nPartitions(); ++i) {
+>       *h_val_pointer += adjacentPartitions(i).size();
+>     }
+>     *h_val_pointer /= nPartitions() * nPartitions();
+> 
+>     return h_val_pointer;
+>   }
+> 
+>   int nVertexes() { return _graph->nVertexes(); }
+>   int nEdges() { return _graph->nEdges(); }
+> 
+> protected:
+>   void init();
+> 
+>   void splitRandom();
+> 
+>   void buildPartitions(int graphType);
+>   void buildSinglePartition();
+>   void buildVIGPartitions();
+>   void buildCVIGPartitions();
+>   void buildRESPartitions();
+> 
+>   Graph *buildGraph(bool weighted, int graphType);
+>   Graph *buildVIGGraph(bool weighted);
+>   Graph *buildCVIGGraph(bool weighted);
+>   Graph *buildRESGraph(bool weighted);
+> 
+>   int unassignedLiterals(vec<Lit> &sc);
+>   bool isUnsatisfied(vec<Lit> &sc);
+> 
+>   int markUnassignedLiterals(vec<Lit> &c, int *markedLits, bool v);
+> 
+>   void printClause(vec<Lit> &sc);
+> 
+> protected:
+>   Solver *_solver;
+> 
+>   vec<int> _graphMappingVar;
+>   vec<int> _graphMappingHard;
+>   vec<int> _graphMappingSoft;
+> 
+>   int _randomSeed;
+>   int _nRandomPartitions;
+>   int _nPartitions;
+>   vec<Partition> _partitions;
+> 
+>   Graph *_graph;
+>   Graph_Communities _gc;
+> };
+> 
+> } // namespace openwbo
+> 
+> #endif // MAXSAT_PARTITION_H
+Only in ./code: MaxSAT_Partition.o
+Only in ./code: PBSolution.o
+Only in ./code: ParserPB.o
+Only in ./code: PartitionCrossover.o
+Only in ./code: SATLike.o
+Only in ./code: Torc.o
+Only in ./code/algorithms: Alg_BLS.o
+Only in ./code/algorithms: Alg_LinearSU.o
+Only in ./code/algorithms: Alg_LinearSU_Clustering.o
+Only in ./code/algorithms: Alg_LinearSU_Mod.o
+Only in ./code/algorithms: Alg_MSU3.o
+Only in ./code/algorithms: Alg_OBV.o
+Only in ./code/algorithms: Alg_OLL.o
+Only in ./code/algorithms: Alg_OLL_Mod.o
+Only in ./code/algorithms: Alg_PartMSU3.o
+Only in ./code/algorithms: Alg_WBO.o
+Only in ./code/clusterings: Cluster.o
+Only in ./code/clusterings: Cluster_DivisiveMaxSeparate.o
+Only in ./code/clusterings: SequenceStatistic.o
+Only in ./code: depend.mk
+Only in ./code/encodings: Enc_Adder.o
+Only in ./code/encodings: Enc_CNetworks.o
+Only in ./code/encodings: Enc_GTE.o
+Only in ./code/encodings: Enc_GTECluster.o
+Only in ./code/encodings: Enc_GTEIncremental.o
+Only in ./code/encodings: Enc_Ladder.o
+Only in ./code/encodings: Enc_MTotalizer.o
+Only in ./code/encodings: Enc_SWC.o
+Only in ./code/encodings: Enc_Totalizer.o
+Only in ./code/encodings: Encodings.o
+Only in ./code/graph: Graph.o
+Only in ./code/graph: Graph_Algorithms.o
+Only in ./code/graph: Graph_Communities.o
+Only in ./code: resultados_maxsat_unweight
+Only in ./code: resultados_maxsat_weight
+diff -r repo_original/code/run_all.sh ./code/run_all.sh
+13c13
+< OUTPUT_DIR="resultados_maxsat_unweight/ej_600_unweighted_glucose/"
+---
+> OUTPUT_DIR="time_log"
+Only in ./code: run_instancia.sh
+diff -r repo_original/code/solvers/glucose4.0/parallel/SolverConfiguration.cc ./code/solvers/glucose4.0/parallel/SolverConfiguration.cc
+1,131c1,131
+< /***************************************************************************************[SolverConfiguration.cc]
+<  Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
+<                                 CRIL - Univ. Artois, France
+<                                 LRI  - Univ. Paris Sud, France (2009-2013)
+<                                 Labri - Univ. Bordeaux, France
+< 
+<  Syrup (Glucose Parallel) -- Copyright (c) 2013-2014, Gilles Audemard, Laurent Simon
+<                                 CRIL - Univ. Artois, France
+<                                 Labri - Univ. Bordeaux, France
+< 
+< Glucose sources are based on MiniSat (see below MiniSat copyrights). Permissions and copyrights of
+< Glucose (sources until 2013, Glucose 3.0, single core) are exactly the same as Minisat on which it 
+< is based on. (see below).
+< 
+< Glucose-Syrup sources are based on another copyright. Permissions and copyrights for the parallel
+< version of Glucose-Syrup (the "Software") are granted, free of charge, to deal with the Software
+< without restriction, including the rights to use, copy, modify, merge, publish, distribute,
+< sublicence, and/or sell copies of the Software, and to permit persons to whom the Software is 
+< furnished to do so, subject to the following conditions:
+< 
+< - The above and below copyrights notices and this permission notice shall be included in all
+< copies or substantial portions of the Software;
+< - The parallel version of Glucose (all files modified since Glucose 3.0 releases, 2013) cannot
+< be used in any competitive event (sat competitions/evaluations) without the express permission of 
+< the authors (Gilles Audemard / Laurent Simon). This is also the case for any competitive event
+< using Glucose Parallel as an embedded SAT engine (single core or not).
+< 
+< 
+< --------------- Original Minisat Copyrights
+< 
+< Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+< Copyright (c) 2007-2010, Niklas Sorensson
+< 
+< Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+< associated documentation files (the "Software"), to deal in the Software without restriction,
+< including without limitation the rights to use, copy, modify, merge, publish, distribute,
+< sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+< furnished to do so, subject to the following conditions:
+< 
+< The above copyright notice and this permission notice shall be included in all copies or
+< substantial portions of the Software.
+< 
+< THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+< NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+< NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+< DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+< OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+<  **************************************************************************************************/
+< 
+< #include "parallel/MultiSolvers.h"
+< #include "core/Solver.h"
+< //#include "parallel/ParallelSolver.h"
+< #include "parallel/SolverConfiguration.h"
+< 
+< using namespace Glucose;
+< 
+<   void SolverConfiguration::configure(MultiSolvers *ms, int nbsolvers) {
+< 
+<    if (nbsolvers < 2 ) return;
+< 
+<    ms->solvers[1]->var_decay = 0.94;
+<    ms->solvers[1]->max_var_decay = 0.96;
+<    ms->solvers[1]->firstReduceDB=600;
+< 
+<    if (nbsolvers < 3 ) return;
+< 
+<    ms->solvers[2]->var_decay = 0.90;
+<    ms->solvers[2]->max_var_decay = 0.97;
+<    ms->solvers[2]->firstReduceDB=500;
+< 
+<    if (nbsolvers < 4 ) return;
+< 
+<    ms->solvers[3]->var_decay = 0.85;
+<    ms->solvers[3]->max_var_decay = 0.93;
+<    ms->solvers[3]->firstReduceDB=400;
+< 
+<    if (nbsolvers < 5 ) return;
+< 
+<    // Glucose 2.0 (+ blocked restarts)
+<    ms->solvers[4]->var_decay = 0.95;
+<    ms->solvers[4]->max_var_decay = 0.95;
+<    ms->solvers[4]->firstReduceDB=4000;
+<    ms->solvers[4]->lbdQueue.growTo(100);
+<    ms->solvers[4]->sizeLBDQueue = 100;
+<    ms->solvers[4]->K = 0.7;
+<    ms->solvers[4]->incReduceDB = 500;
+< 
+<    if (nbsolvers < 6 ) return;
+< 
+<    ms->solvers[5]->var_decay = 0.93;
+<    ms->solvers[5]->max_var_decay = 0.96;
+<    ms->solvers[5]->firstReduceDB=100;
+<    ms->solvers[5]->incReduceDB = 500;
+< 
+<    if (nbsolvers < 7 ) return;
+< 
+<    ms->solvers[6]->var_decay = 0.75;
+<    ms->solvers[6]->max_var_decay = 0.94;
+<    ms->solvers[6]->firstReduceDB=2000;
+< 
+<    if (nbsolvers < 8 ) return; 
+< 
+<    ms->solvers[7]->var_decay = 0.94;
+<    ms->solvers[7]->max_var_decay = 0.96;
+<    ms->solvers[7]->firstReduceDB=800;
+< 
+<    if (nbsolvers < 9) return;
+< 
+<    ms->solvers[8]->reduceOnSize = true;
+< 
+<    if (nbsolvers < 10 ) return;
+< 
+<    ms->solvers[9]->reduceOnSize = true;
+<    ms->solvers[9]->reduceOnSizeSize = 14;
+< 
+<    if (nbsolvers < 11 ) return;
+< 
+<    double noisevar_decay = 0.005;
+<    int noiseReduceDB = 50;
+<    for (int i=10;i<nbsolvers;i++) {
+<        ms->solvers[i]-> var_decay = ms->solvers[i%8]->var_decay;
+<        ms->solvers[i]-> max_var_decay = ms->solvers[i%8]->max_var_decay;
+<        ms->solvers[i]-> firstReduceDB= ms->solvers[i%8]->firstReduceDB;
+<        ms->solvers[i]->var_decay += noisevar_decay;
+<        ms->solvers[i]->firstReduceDB+=noiseReduceDB;
+<        if ((i+1) % 8 == 0) {
+< 	   noisevar_decay += 0.006;
+< 	   noiseReduceDB += 25;
+<        }
+<    }
+<  }
+---
+> /***************************************************************************************[SolverConfiguration.cc]
+>  Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
+>                                 CRIL - Univ. Artois, France
+>                                 LRI  - Univ. Paris Sud, France (2009-2013)
+>                                 Labri - Univ. Bordeaux, France
+> 
+>  Syrup (Glucose Parallel) -- Copyright (c) 2013-2014, Gilles Audemard, Laurent Simon
+>                                 CRIL - Univ. Artois, France
+>                                 Labri - Univ. Bordeaux, France
+> 
+> Glucose sources are based on MiniSat (see below MiniSat copyrights). Permissions and copyrights of
+> Glucose (sources until 2013, Glucose 3.0, single core) are exactly the same as Minisat on which it 
+> is based on. (see below).
+> 
+> Glucose-Syrup sources are based on another copyright. Permissions and copyrights for the parallel
+> version of Glucose-Syrup (the "Software") are granted, free of charge, to deal with the Software
+> without restriction, including the rights to use, copy, modify, merge, publish, distribute,
+> sublicence, and/or sell copies of the Software, and to permit persons to whom the Software is 
+> furnished to do so, subject to the following conditions:
+> 
+> - The above and below copyrights notices and this permission notice shall be included in all
+> copies or substantial portions of the Software;
+> - The parallel version of Glucose (all files modified since Glucose 3.0 releases, 2013) cannot
+> be used in any competitive event (sat competitions/evaluations) without the express permission of 
+> the authors (Gilles Audemard / Laurent Simon). This is also the case for any competitive event
+> using Glucose Parallel as an embedded SAT engine (single core or not).
+> 
+> 
+> --------------- Original Minisat Copyrights
+> 
+> Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+> Copyright (c) 2007-2010, Niklas Sorensson
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+> associated documentation files (the "Software"), to deal in the Software without restriction,
+> including without limitation the rights to use, copy, modify, merge, publish, distribute,
+> sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all copies or
+> substantial portions of the Software.
+> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+> NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+> NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+> DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+> OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>  **************************************************************************************************/
+> 
+> #include "parallel/MultiSolvers.h"
+> #include "core/Solver.h"
+> //#include "parallel/ParallelSolver.h"
+> #include "parallel/SolverConfiguration.h"
+> 
+> using namespace Glucose;
+> 
+>   void SolverConfiguration::configure(MultiSolvers *ms, int nbsolvers) {
+> 
+>    if (nbsolvers < 2 ) return;
+> 
+>    ms->solvers[1]->var_decay = 0.94;
+>    ms->solvers[1]->max_var_decay = 0.96;
+>    ms->solvers[1]->firstReduceDB=600;
+> 
+>    if (nbsolvers < 3 ) return;
+> 
+>    ms->solvers[2]->var_decay = 0.90;
+>    ms->solvers[2]->max_var_decay = 0.97;
+>    ms->solvers[2]->firstReduceDB=500;
+> 
+>    if (nbsolvers < 4 ) return;
+> 
+>    ms->solvers[3]->var_decay = 0.85;
+>    ms->solvers[3]->max_var_decay = 0.93;
+>    ms->solvers[3]->firstReduceDB=400;
+> 
+>    if (nbsolvers < 5 ) return;
+> 
+>    // Glucose 2.0 (+ blocked restarts)
+>    ms->solvers[4]->var_decay = 0.95;
+>    ms->solvers[4]->max_var_decay = 0.95;
+>    ms->solvers[4]->firstReduceDB=4000;
+>    ms->solvers[4]->lbdQueue.growTo(100);
+>    ms->solvers[4]->sizeLBDQueue = 100;
+>    ms->solvers[4]->K = 0.7;
+>    ms->solvers[4]->incReduceDB = 500;
+> 
+>    if (nbsolvers < 6 ) return;
+> 
+>    ms->solvers[5]->var_decay = 0.93;
+>    ms->solvers[5]->max_var_decay = 0.96;
+>    ms->solvers[5]->firstReduceDB=100;
+>    ms->solvers[5]->incReduceDB = 500;
+> 
+>    if (nbsolvers < 7 ) return;
+> 
+>    ms->solvers[6]->var_decay = 0.75;
+>    ms->solvers[6]->max_var_decay = 0.94;
+>    ms->solvers[6]->firstReduceDB=2000;
+> 
+>    if (nbsolvers < 8 ) return; 
+> 
+>    ms->solvers[7]->var_decay = 0.94;
+>    ms->solvers[7]->max_var_decay = 0.96;
+>    ms->solvers[7]->firstReduceDB=800;
+> 
+>    if (nbsolvers < 9) return;
+> 
+>    ms->solvers[8]->reduceOnSize = true;
+> 
+>    if (nbsolvers < 10 ) return;
+> 
+>    ms->solvers[9]->reduceOnSize = true;
+>    ms->solvers[9]->reduceOnSizeSize = 14;
+> 
+>    if (nbsolvers < 11 ) return;
+> 
+>    double noisevar_decay = 0.005;
+>    int noiseReduceDB = 50;
+>    for (int i=10;i<nbsolvers;i++) {
+>        ms->solvers[i]-> var_decay = ms->solvers[i%8]->var_decay;
+>        ms->solvers[i]-> max_var_decay = ms->solvers[i%8]->max_var_decay;
+>        ms->solvers[i]-> firstReduceDB= ms->solvers[i%8]->firstReduceDB;
+>        ms->solvers[i]->var_decay += noisevar_decay;
+>        ms->solvers[i]->firstReduceDB+=noiseReduceDB;
+>        if ((i+1) % 8 == 0) {
+> 	   noisevar_decay += 0.006;
+> 	   noiseReduceDB += 25;
+>        }
+>    }
+>  }
+Only in ./code/solvers/glucose4.1/core: Solver.o
+diff -r repo_original/code/solvers/glucose4.1/parallel/SolverConfiguration.cc ./code/solvers/glucose4.1/parallel/SolverConfiguration.cc
+1,176c1,176
+< /***************************************************************************************[SolverConfiguration.cc]
+<  Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
+<                                 CRIL - Univ. Artois, France
+<                                 LRI  - Univ. Paris Sud, France (2009-2013)
+<                                 Labri - Univ. Bordeaux, France
+< 
+<  Syrup (Glucose Parallel) -- Copyright (c) 2013-2014, Gilles Audemard, Laurent Simon
+<                                 CRIL - Univ. Artois, France
+<                                 Labri - Univ. Bordeaux, France
+< 
+< Glucose sources are based on MiniSat (see below MiniSat copyrights). Permissions and copyrights of
+< Glucose (sources until 2013, Glucose 3.0, single core) are exactly the same as Minisat on which it 
+< is based on. (see below).
+< 
+< Glucose-Syrup sources are based on another copyright. Permissions and copyrights for the parallel
+< version of Glucose-Syrup (the "Software") are granted, free of charge, to deal with the Software
+< without restriction, including the rights to use, copy, modify, merge, publish, distribute,
+< sublicence, and/or sell copies of the Software, and to permit persons to whom the Software is 
+< furnished to do so, subject to the following conditions:
+< 
+< - The above and below copyrights notices and this permission notice shall be included in all
+< copies or substantial portions of the Software;
+< - The parallel version of Glucose (all files modified since Glucose 3.0 releases, 2013) cannot
+< be used in any competitive event (sat competitions/evaluations) without the express permission of 
+< the authors (Gilles Audemard / Laurent Simon). This is also the case for any competitive event
+< using Glucose Parallel as an embedded SAT engine (single core or not).
+< 
+< 
+< --------------- Original Minisat Copyrights
+< 
+< Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+< Copyright (c) 2007-2010, Niklas Sorensson
+< 
+< Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+< associated documentation files (the "Software"), to deal in the Software without restriction,
+< including without limitation the rights to use, copy, modify, merge, publish, distribute,
+< sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+< furnished to do so, subject to the following conditions:
+< 
+< The above copyright notice and this permission notice shall be included in all copies or
+< substantial portions of the Software.
+< 
+< THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+< NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+< NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+< DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+< OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+<  **************************************************************************************************/
+< 
+< #include "parallel/MultiSolvers.h"
+< #include "core/Solver.h"
+< //#include "parallel/ParallelSolver.h"
+< #include "parallel/SolverConfiguration.h"
+< 
+< using namespace Glucose;
+< 
+< 
+< void SolverConfiguration::configure(MultiSolvers *ms, int nbsolvers) {
+<     for(int i = 1;i<nbsolvers;i++) { // Configuration for the sat race 2015
+<         ms->solvers[i]->randomizeFirstDescent = true;
+<         ms->solvers[i]->adaptStrategies = (i%2==0); // Just half of the cores are in adaptive mode
+<         ms->solvers[i]->forceUnsatOnNewDescent = (i%4==0); // Just half of adaptive cores have the unsat force
+<     }
+<     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+<         for(int i=0;i<nbsolvers;i++) { // we have like 32 threads, so we need to export just very good clauses
+<             ms->solvers[i]->goodlimitlbd = 5;
+<             ms->solvers[i]->goodlimitsize = 15;
+<         }
+<     }
+< 
+< }
+< 
+<         
+< void SolverConfiguration::configureSAT15Adapt(MultiSolvers *ms, int nbsolvers) {
+<     for(int i = 1;i<nbsolvers;i++) { // Configuration for the sat race 2015
+<         ms->solvers[i]->randomizeFirstDescent = true;
+<         ms->solvers[i]->adaptStrategies = (i%2==0); // Just half of the cores are in adaptive mode
+<     }
+<     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+<         for(int i=0;i<nbsolvers;i++) { // we have like 32 threads, so we need to export just very good clauses
+<             ms->solvers[i]->goodlimitlbd = 5;
+<             ms->solvers[i]->goodlimitsize = 15;
+<         }
+<     }
+< }
+< 
+< 
+< void SolverConfiguration::configureSAT15Default(MultiSolvers *ms, int nbsolvers) {
+<     for(int i = 1;i<nbsolvers;i++) 
+< 	ms->solvers[i]->randomizeFirstDescent = true;
+< 
+<     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+< 	for(int i=0;i<nbsolvers;i++) { 
+< 	    ms->solvers[i]->goodlimitlbd = 5;
+< 	    ms->solvers[i]->goodlimitsize = 15;
+< 
+< 	}
+<     }
+< 
+< }
+< 
+< void SolverConfiguration::configureSAT14(MultiSolvers *ms, int nbsolvers) {
+<     
+<    if (nbsolvers < 2 ) return;
+< 
+<    ms->solvers[1]->var_decay = 0.94;
+<    ms->solvers[1]->max_var_decay = 0.96;
+<    ms->solvers[1]->firstReduceDB=600;
+< 
+<    if (nbsolvers < 3 ) return;
+< 
+<    ms->solvers[2]->var_decay = 0.90;
+<    ms->solvers[2]->max_var_decay = 0.97;
+<    ms->solvers[2]->firstReduceDB=500;
+< 
+<    if (nbsolvers < 4 ) return;
+< 
+<    ms->solvers[3]->var_decay = 0.85;
+<    ms->solvers[3]->max_var_decay = 0.93;
+<    ms->solvers[3]->firstReduceDB=400;
+< 
+<    if (nbsolvers < 5 ) return;
+< 
+<    // Glucose 2.0 (+ blocked restarts)
+<    ms->solvers[4]->var_decay = 0.95;
+<    ms->solvers[4]->max_var_decay = 0.95;
+<    ms->solvers[4]->firstReduceDB=4000;
+<    ms->solvers[4]->lbdQueue.growTo(100);
+<    ms->solvers[4]->sizeLBDQueue = 100;
+<    ms->solvers[4]->K = 0.7;
+<    ms->solvers[4]->incReduceDB = 500;
+< 
+<    if (nbsolvers < 6 ) return;
+< 
+<    ms->solvers[5]->var_decay = 0.93;
+<    ms->solvers[5]->max_var_decay = 0.96;
+<    ms->solvers[5]->firstReduceDB=100;
+<    ms->solvers[5]->incReduceDB = 500;
+< 
+<    if (nbsolvers < 7 ) return;
+< 
+<    ms->solvers[6]->var_decay = 0.75;
+<    ms->solvers[6]->max_var_decay = 0.94;
+<    ms->solvers[6]->firstReduceDB=2000;
+< 
+<    if (nbsolvers < 8 ) return; 
+< 
+<    ms->solvers[7]->var_decay = 0.94;
+<    ms->solvers[7]->max_var_decay = 0.96;
+<    ms->solvers[7]->firstReduceDB=800;
+< 
+<    if (nbsolvers < 9) return;
+< 
+< //   ms->solvers[8]->reduceOnSize = true; // NOT USED ANYMORE
+< 
+<    if (nbsolvers < 10 ) return;
+< 
+< //   ms->solvers[9]->reduceOnSize = true; // NOT USED ANYMORE
+< //   ms->solvers[9]->reduceOnSizeSize = 14;
+< 
+<    if (nbsolvers < 11 ) return;
+< 
+<    double noisevar_decay = 0.005;
+<    int noiseReduceDB = 50;
+<    for (int i=10;i<nbsolvers;i++) {
+<        ms->solvers[i]-> var_decay = ms->solvers[i%8]->var_decay;
+<        ms->solvers[i]-> max_var_decay = ms->solvers[i%8]->max_var_decay;
+<        ms->solvers[i]-> firstReduceDB= ms->solvers[i%8]->firstReduceDB;
+<        ms->solvers[i]->var_decay += noisevar_decay;
+<        ms->solvers[i]->firstReduceDB+=noiseReduceDB;
+<        if ((i+1) % 8 == 0) {
+< 	   noisevar_decay += 0.006;
+< 	   noiseReduceDB += 25;
+<        }
+<    }
+<  }
+---
+> /***************************************************************************************[SolverConfiguration.cc]
+>  Glucose -- Copyright (c) 2009-2014, Gilles Audemard, Laurent Simon
+>                                 CRIL - Univ. Artois, France
+>                                 LRI  - Univ. Paris Sud, France (2009-2013)
+>                                 Labri - Univ. Bordeaux, France
+> 
+>  Syrup (Glucose Parallel) -- Copyright (c) 2013-2014, Gilles Audemard, Laurent Simon
+>                                 CRIL - Univ. Artois, France
+>                                 Labri - Univ. Bordeaux, France
+> 
+> Glucose sources are based on MiniSat (see below MiniSat copyrights). Permissions and copyrights of
+> Glucose (sources until 2013, Glucose 3.0, single core) are exactly the same as Minisat on which it 
+> is based on. (see below).
+> 
+> Glucose-Syrup sources are based on another copyright. Permissions and copyrights for the parallel
+> version of Glucose-Syrup (the "Software") are granted, free of charge, to deal with the Software
+> without restriction, including the rights to use, copy, modify, merge, publish, distribute,
+> sublicence, and/or sell copies of the Software, and to permit persons to whom the Software is 
+> furnished to do so, subject to the following conditions:
+> 
+> - The above and below copyrights notices and this permission notice shall be included in all
+> copies or substantial portions of the Software;
+> - The parallel version of Glucose (all files modified since Glucose 3.0 releases, 2013) cannot
+> be used in any competitive event (sat competitions/evaluations) without the express permission of 
+> the authors (Gilles Audemard / Laurent Simon). This is also the case for any competitive event
+> using Glucose Parallel as an embedded SAT engine (single core or not).
+> 
+> 
+> --------------- Original Minisat Copyrights
+> 
+> Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+> Copyright (c) 2007-2010, Niklas Sorensson
+> 
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+> associated documentation files (the "Software"), to deal in the Software without restriction,
+> including without limitation the rights to use, copy, modify, merge, publish, distribute,
+> sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+> 
+> The above copyright notice and this permission notice shall be included in all copies or
+> substantial portions of the Software.
+> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+> NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+> NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+> DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+> OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>  **************************************************************************************************/
+> 
+> #include "parallel/MultiSolvers.h"
+> #include "core/Solver.h"
+> //#include "parallel/ParallelSolver.h"
+> #include "parallel/SolverConfiguration.h"
+> 
+> using namespace Glucose;
+> 
+> 
+> void SolverConfiguration::configure(MultiSolvers *ms, int nbsolvers) {
+>     for(int i = 1;i<nbsolvers;i++) { // Configuration for the sat race 2015
+>         ms->solvers[i]->randomizeFirstDescent = true;
+>         ms->solvers[i]->adaptStrategies = (i%2==0); // Just half of the cores are in adaptive mode
+>         ms->solvers[i]->forceUnsatOnNewDescent = (i%4==0); // Just half of adaptive cores have the unsat force
+>     }
+>     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+>         for(int i=0;i<nbsolvers;i++) { // we have like 32 threads, so we need to export just very good clauses
+>             ms->solvers[i]->goodlimitlbd = 5;
+>             ms->solvers[i]->goodlimitsize = 15;
+>         }
+>     }
+> 
+> }
+> 
+>         
+> void SolverConfiguration::configureSAT15Adapt(MultiSolvers *ms, int nbsolvers) {
+>     for(int i = 1;i<nbsolvers;i++) { // Configuration for the sat race 2015
+>         ms->solvers[i]->randomizeFirstDescent = true;
+>         ms->solvers[i]->adaptStrategies = (i%2==0); // Just half of the cores are in adaptive mode
+>     }
+>     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+>         for(int i=0;i<nbsolvers;i++) { // we have like 32 threads, so we need to export just very good clauses
+>             ms->solvers[i]->goodlimitlbd = 5;
+>             ms->solvers[i]->goodlimitsize = 15;
+>         }
+>     }
+> }
+> 
+> 
+> void SolverConfiguration::configureSAT15Default(MultiSolvers *ms, int nbsolvers) {
+>     for(int i = 1;i<nbsolvers;i++) 
+> 	ms->solvers[i]->randomizeFirstDescent = true;
+> 
+>     if (nbsolvers > 8) { // configuration for the second phase of the sat race 2015
+> 	for(int i=0;i<nbsolvers;i++) { 
+> 	    ms->solvers[i]->goodlimitlbd = 5;
+> 	    ms->solvers[i]->goodlimitsize = 15;
+> 
+> 	}
+>     }
+> 
+> }
+> 
+> void SolverConfiguration::configureSAT14(MultiSolvers *ms, int nbsolvers) {
+>     
+>    if (nbsolvers < 2 ) return;
+> 
+>    ms->solvers[1]->var_decay = 0.94;
+>    ms->solvers[1]->max_var_decay = 0.96;
+>    ms->solvers[1]->firstReduceDB=600;
+> 
+>    if (nbsolvers < 3 ) return;
+> 
+>    ms->solvers[2]->var_decay = 0.90;
+>    ms->solvers[2]->max_var_decay = 0.97;
+>    ms->solvers[2]->firstReduceDB=500;
+> 
+>    if (nbsolvers < 4 ) return;
+> 
+>    ms->solvers[3]->var_decay = 0.85;
+>    ms->solvers[3]->max_var_decay = 0.93;
+>    ms->solvers[3]->firstReduceDB=400;
+> 
+>    if (nbsolvers < 5 ) return;
+> 
+>    // Glucose 2.0 (+ blocked restarts)
+>    ms->solvers[4]->var_decay = 0.95;
+>    ms->solvers[4]->max_var_decay = 0.95;
+>    ms->solvers[4]->firstReduceDB=4000;
+>    ms->solvers[4]->lbdQueue.growTo(100);
+>    ms->solvers[4]->sizeLBDQueue = 100;
+>    ms->solvers[4]->K = 0.7;
+>    ms->solvers[4]->incReduceDB = 500;
+> 
+>    if (nbsolvers < 6 ) return;
+> 
+>    ms->solvers[5]->var_decay = 0.93;
+>    ms->solvers[5]->max_var_decay = 0.96;
+>    ms->solvers[5]->firstReduceDB=100;
+>    ms->solvers[5]->incReduceDB = 500;
+> 
+>    if (nbsolvers < 7 ) return;
+> 
+>    ms->solvers[6]->var_decay = 0.75;
+>    ms->solvers[6]->max_var_decay = 0.94;
+>    ms->solvers[6]->firstReduceDB=2000;
+> 
+>    if (nbsolvers < 8 ) return; 
+> 
+>    ms->solvers[7]->var_decay = 0.94;
+>    ms->solvers[7]->max_var_decay = 0.96;
+>    ms->solvers[7]->firstReduceDB=800;
+> 
+>    if (nbsolvers < 9) return;
+> 
+> //   ms->solvers[8]->reduceOnSize = true; // NOT USED ANYMORE
+> 
+>    if (nbsolvers < 10 ) return;
+> 
+> //   ms->solvers[9]->reduceOnSize = true; // NOT USED ANYMORE
+> //   ms->solvers[9]->reduceOnSizeSize = 14;
+> 
+>    if (nbsolvers < 11 ) return;
+> 
+>    double noisevar_decay = 0.005;
+>    int noiseReduceDB = 50;
+>    for (int i=10;i<nbsolvers;i++) {
+>        ms->solvers[i]-> var_decay = ms->solvers[i%8]->var_decay;
+>        ms->solvers[i]-> max_var_decay = ms->solvers[i%8]->max_var_decay;
+>        ms->solvers[i]-> firstReduceDB= ms->solvers[i%8]->firstReduceDB;
+>        ms->solvers[i]->var_decay += noisevar_decay;
+>        ms->solvers[i]->firstReduceDB+=noiseReduceDB;
+>        if ((i+1) % 8 == 0) {
+> 	   noisevar_decay += 0.006;
+> 	   noiseReduceDB += 25;
+>        }
+>    }
+>  }
+Only in ./code/solvers/glucose4.1/utils: Options.o
+Only in ./code/solvers/glucose4.1/utils: System.o
+Only in ./code/solvers/topor/core: Solver.o
+Only in ./code/solvers/topor/topor: Topi.o
+Only in ./code/solvers/topor/topor: TopiAsg.o
+Only in ./code/solvers/topor/topor: TopiBacktrack.o
+Only in ./code/solvers/topor/topor: TopiBcp.o
+Only in ./code/solvers/topor/topor: TopiBitCompression.o
+Only in ./code/solvers/topor/topor: TopiCompression.o
+Only in ./code/solvers/topor/topor: TopiConflictAnalysis.o
+Only in ./code/solvers/topor/topor: TopiDebugPrinting.o
+Only in ./code/solvers/topor/topor: TopiDecision.o
+Only in ./code/solvers/topor/topor: TopiInprocess.o
+Only in ./code/solvers/topor/topor: TopiRestart.o
+Only in ./code/solvers/topor/topor: TopiWL.o
+Only in ./code/solvers/topor/topor: Topor.o
+Only in ./code/solvers/topor/topor: ToporIpasir.o
+diff -r repo_original/code/solvers/topor/topor/topor.sln ./code/solvers/topor/topor/topor.sln
+1,31c1,31
+< ﻿
+< Microsoft Visual Studio Solution File, Format Version 12.00
+< # Visual Studio Version 16
+< VisualStudioVersion = 16.0.31129.286
+< MinimumVisualStudioVersion = 10.0.40219.1
+< Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topor", "topor.vcxproj", "{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}"
+< EndProject
+< Global
+< 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+< 		Debug|x64 = Debug|x64
+< 		Debug|x86 = Debug|x86
+< 		Release|x64 = Release|x64
+< 		Release|x86 = Release|x86
+< 	EndGlobalSection
+< 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x64.ActiveCfg = Debug|x64
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x64.Build.0 = Debug|x64
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x86.ActiveCfg = Debug|Win32
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x86.Build.0 = Debug|Win32
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x64.ActiveCfg = Release|x64
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x64.Build.0 = Release|x64
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x86.ActiveCfg = Release|Win32
+< 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x86.Build.0 = Release|Win32
+< 	EndGlobalSection
+< 	GlobalSection(SolutionProperties) = preSolution
+< 		HideSolutionNode = FALSE
+< 	EndGlobalSection
+< 	GlobalSection(ExtensibilityGlobals) = postSolution
+< 		SolutionGuid = {E6E53D79-B8F6-4661-AB06-DE5F5491F090}
+< 	EndGlobalSection
+< EndGlobal
+---
+> ﻿
+> Microsoft Visual Studio Solution File, Format Version 12.00
+> # Visual Studio Version 16
+> VisualStudioVersion = 16.0.31129.286
+> MinimumVisualStudioVersion = 10.0.40219.1
+> Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topor", "topor.vcxproj", "{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}"
+> EndProject
+> Global
+> 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+> 		Debug|x64 = Debug|x64
+> 		Debug|x86 = Debug|x86
+> 		Release|x64 = Release|x64
+> 		Release|x86 = Release|x86
+> 	EndGlobalSection
+> 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x64.ActiveCfg = Debug|x64
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x64.Build.0 = Debug|x64
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x86.ActiveCfg = Debug|Win32
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Debug|x86.Build.0 = Debug|Win32
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x64.ActiveCfg = Release|x64
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x64.Build.0 = Release|x64
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x86.ActiveCfg = Release|Win32
+> 		{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}.Release|x86.Build.0 = Release|Win32
+> 	EndGlobalSection
+> 	GlobalSection(SolutionProperties) = preSolution
+> 		HideSolutionNode = FALSE
+> 	EndGlobalSection
+> 	GlobalSection(ExtensibilityGlobals) = postSolution
+> 		SolutionGuid = {E6E53D79-B8F6-4661-AB06-DE5F5491F090}
+> 	EndGlobalSection
+> EndGlobal
+diff -r repo_original/code/solvers/topor/topor/topor.vcxproj ./code/solvers/topor/topor/topor.vcxproj
+1,139c1,139
+< <?xml version="1.0" encoding="utf-8"?>
+< <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<   <ItemGroup Label="ProjectConfigurations">
+<     <ProjectConfiguration Include="Debug|Win32">
+<       <Configuration>Debug</Configuration>
+<       <Platform>Win32</Platform>
+<     </ProjectConfiguration>
+<     <ProjectConfiguration Include="Release|Win32">
+<       <Configuration>Release</Configuration>
+<       <Platform>Win32</Platform>
+<     </ProjectConfiguration>
+<     <ProjectConfiguration Include="Debug|x64">
+<       <Configuration>Debug</Configuration>
+<       <Platform>x64</Platform>
+<     </ProjectConfiguration>
+<     <ProjectConfiguration Include="Release|x64">
+<       <Configuration>Release</Configuration>
+<       <Platform>x64</Platform>
+<     </ProjectConfiguration>
+<   </ItemGroup>
+<   <PropertyGroup Label="Globals">
+<     <VCProjectVersion>16.0</VCProjectVersion>
+<     <ProjectGuid>{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}</ProjectGuid>
+<     <Keyword>Win32Proj</Keyword>
+<     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+<   </PropertyGroup>
+<   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+<     <ConfigurationType>Application</ConfigurationType>
+<     <UseDebugLibraries>true</UseDebugLibraries>
+<     <PlatformToolset>v142</PlatformToolset>
+<   </PropertyGroup>
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+<     <ConfigurationType>Application</ConfigurationType>
+<     <UseDebugLibraries>false</UseDebugLibraries>
+<     <PlatformToolset>v142</PlatformToolset>
+<   </PropertyGroup>
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+<     <ConfigurationType>Application</ConfigurationType>
+<     <UseDebugLibraries>true</UseDebugLibraries>
+<     <PlatformToolset>v142</PlatformToolset>
+<   </PropertyGroup>
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+<     <ConfigurationType>Application</ConfigurationType>
+<     <UseDebugLibraries>false</UseDebugLibraries>
+<     <PlatformToolset>v142</PlatformToolset>
+<   </PropertyGroup>
+<   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+<   <ImportGroup Label="ExtensionSettings">
+<   </ImportGroup>
+<   <ImportGroup Label="Shared">
+<   </ImportGroup>
+<   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+<     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+<   </ImportGroup>
+<   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+<     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+<   </ImportGroup>
+<   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+<     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+<   </ImportGroup>
+<   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+<     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+<   </ImportGroup>
+<   <PropertyGroup Label="UserMacros" />
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+<     <LinkIncremental>true</LinkIncremental>
+<   </PropertyGroup>
+<   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+<     <LinkIncremental>true</LinkIncremental>
+<   </PropertyGroup>
+<   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+<     <ClCompile>
+<       <PreprocessorDefinitions>NOMINMAX ;SKIP_ZLIB;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+<       <WarningLevel>Level3</WarningLevel>
+<       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+<       <Optimization>Disabled</Optimization>
+<       <LanguageStandard>stdcpplatest</LanguageStandard>
+<     </ClCompile>
+<     <Link>
+<       <TargetMachine>MachineX86</TargetMachine>
+<       <GenerateDebugInformation>true</GenerateDebugInformation>
+<       <SubSystem>Console</SubSystem>
+<     </Link>
+<   </ItemDefinitionGroup>
+<   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+<     <ClCompile>
+<       <PreprocessorDefinitions>NOMINMAX ;SKIP_ZLIB;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+<       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+<       <WarningLevel>Level3</WarningLevel>
+<       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+<       <LanguageStandard>stdcpplatest</LanguageStandard>
+<       <AdditionalOptions>/analyze:stacksize 100000</AdditionalOptions>
+<     </ClCompile>
+<     <Link>
+<       <TargetMachine>MachineX86</TargetMachine>
+<       <GenerateDebugInformation>true</GenerateDebugInformation>
+<       <SubSystem>Console</SubSystem>
+<       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+<       <OptimizeReferences>true</OptimizeReferences>
+<     </Link>
+<   </ItemDefinitionGroup>
+<   <ItemGroup>
+<     <ClCompile Include="Main.cc" />
+<     <ClCompile Include="Topi.cc" />
+<     <ClCompile Include="TopiAsg.cc" />
+<     <ClCompile Include="TopiBacktrack.cc" />
+<     <ClCompile Include="TopiBcp.cc" />
+<     <ClCompile Include="TopiCompression.cc" />
+<     <ClCompile Include="TopiConflictAnalysis.cc" />
+<     <ClCompile Include="TopiDebugPrinting.cc" />
+<     <ClCompile Include="TopiDecision.cc" />
+<     <ClCompile Include="TopiRestart.cc" />
+<     <ClCompile Include="TopiWL.cc" />
+<     <ClCompile Include="Topor.cc" />
+<   </ItemGroup>
+<   <ItemGroup>
+<     <ClInclude Include="BasicMemoryUsage.h" />
+<     <ClInclude Include="BitArray.hpp" />
+<     <ClInclude Include="ColorPrint.h" />
+<     <ClInclude Include="Diamond.h" />
+<     <ClInclude Include="SetInScope.h" />
+<     <ClInclude Include="TableBitInfo.hpp" />
+<     <ClInclude Include="TimeMeasure.h" />
+<     <ClInclude Include="Topi.hpp" />
+<     <ClInclude Include="TopiGlobal.hpp" />
+<     <ClInclude Include="TopiHandleNewUserCls.hpp" />
+<     <ClInclude Include="TopiParams.hpp" />
+<     <ClInclude Include="TopiVarScores.hpp" />
+<     <ClInclude Include="Topor.hpp" />
+<     <ClInclude Include="ToporDynArray.hpp" />
+<     <ClInclude Include="ToporExternalTypes.hpp" />
+<     <ClInclude Include="ToporVector.hpp" />
+<     <ClInclude Include="ToporWinAverage.hpp" />
+<   </ItemGroup>
+<   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+<   <ImportGroup Label="ExtensionTargets">
+<   </ImportGroup>
+---
+> <?xml version="1.0" encoding="utf-8"?>
+> <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>   <ItemGroup Label="ProjectConfigurations">
+>     <ProjectConfiguration Include="Debug|Win32">
+>       <Configuration>Debug</Configuration>
+>       <Platform>Win32</Platform>
+>     </ProjectConfiguration>
+>     <ProjectConfiguration Include="Release|Win32">
+>       <Configuration>Release</Configuration>
+>       <Platform>Win32</Platform>
+>     </ProjectConfiguration>
+>     <ProjectConfiguration Include="Debug|x64">
+>       <Configuration>Debug</Configuration>
+>       <Platform>x64</Platform>
+>     </ProjectConfiguration>
+>     <ProjectConfiguration Include="Release|x64">
+>       <Configuration>Release</Configuration>
+>       <Platform>x64</Platform>
+>     </ProjectConfiguration>
+>   </ItemGroup>
+>   <PropertyGroup Label="Globals">
+>     <VCProjectVersion>16.0</VCProjectVersion>
+>     <ProjectGuid>{5D72317F-8E9D-417B-A6CD-329C5DBAAB38}</ProjectGuid>
+>     <Keyword>Win32Proj</Keyword>
+>     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+>   </PropertyGroup>
+>   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+>     <ConfigurationType>Application</ConfigurationType>
+>     <UseDebugLibraries>true</UseDebugLibraries>
+>     <PlatformToolset>v142</PlatformToolset>
+>   </PropertyGroup>
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+>     <ConfigurationType>Application</ConfigurationType>
+>     <UseDebugLibraries>false</UseDebugLibraries>
+>     <PlatformToolset>v142</PlatformToolset>
+>   </PropertyGroup>
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+>     <ConfigurationType>Application</ConfigurationType>
+>     <UseDebugLibraries>true</UseDebugLibraries>
+>     <PlatformToolset>v142</PlatformToolset>
+>   </PropertyGroup>
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+>     <ConfigurationType>Application</ConfigurationType>
+>     <UseDebugLibraries>false</UseDebugLibraries>
+>     <PlatformToolset>v142</PlatformToolset>
+>   </PropertyGroup>
+>   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+>   <ImportGroup Label="ExtensionSettings">
+>   </ImportGroup>
+>   <ImportGroup Label="Shared">
+>   </ImportGroup>
+>   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+>     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+>   </ImportGroup>
+>   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+>     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+>   </ImportGroup>
+>   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+>     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+>   </ImportGroup>
+>   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+>     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+>   </ImportGroup>
+>   <PropertyGroup Label="UserMacros" />
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+>     <LinkIncremental>true</LinkIncremental>
+>   </PropertyGroup>
+>   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+>     <LinkIncremental>true</LinkIncremental>
+>   </PropertyGroup>
+>   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+>     <ClCompile>
+>       <PreprocessorDefinitions>NOMINMAX ;SKIP_ZLIB;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+>       <WarningLevel>Level3</WarningLevel>
+>       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+>       <Optimization>Disabled</Optimization>
+>       <LanguageStandard>stdcpplatest</LanguageStandard>
+>     </ClCompile>
+>     <Link>
+>       <TargetMachine>MachineX86</TargetMachine>
+>       <GenerateDebugInformation>true</GenerateDebugInformation>
+>       <SubSystem>Console</SubSystem>
+>     </Link>
+>   </ItemDefinitionGroup>
+>   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+>     <ClCompile>
+>       <PreprocessorDefinitions>NOMINMAX ;SKIP_ZLIB;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+>       <WarningLevel>Level3</WarningLevel>
+>       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+>       <LanguageStandard>stdcpplatest</LanguageStandard>
+>       <AdditionalOptions>/analyze:stacksize 100000</AdditionalOptions>
+>     </ClCompile>
+>     <Link>
+>       <TargetMachine>MachineX86</TargetMachine>
+>       <GenerateDebugInformation>true</GenerateDebugInformation>
+>       <SubSystem>Console</SubSystem>
+>       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+>       <OptimizeReferences>true</OptimizeReferences>
+>     </Link>
+>   </ItemDefinitionGroup>
+>   <ItemGroup>
+>     <ClCompile Include="Main.cc" />
+>     <ClCompile Include="Topi.cc" />
+>     <ClCompile Include="TopiAsg.cc" />
+>     <ClCompile Include="TopiBacktrack.cc" />
+>     <ClCompile Include="TopiBcp.cc" />
+>     <ClCompile Include="TopiCompression.cc" />
+>     <ClCompile Include="TopiConflictAnalysis.cc" />
+>     <ClCompile Include="TopiDebugPrinting.cc" />
+>     <ClCompile Include="TopiDecision.cc" />
+>     <ClCompile Include="TopiRestart.cc" />
+>     <ClCompile Include="TopiWL.cc" />
+>     <ClCompile Include="Topor.cc" />
+>   </ItemGroup>
+>   <ItemGroup>
+>     <ClInclude Include="BasicMemoryUsage.h" />
+>     <ClInclude Include="BitArray.hpp" />
+>     <ClInclude Include="ColorPrint.h" />
+>     <ClInclude Include="Diamond.h" />
+>     <ClInclude Include="SetInScope.h" />
+>     <ClInclude Include="TableBitInfo.hpp" />
+>     <ClInclude Include="TimeMeasure.h" />
+>     <ClInclude Include="Topi.hpp" />
+>     <ClInclude Include="TopiGlobal.hpp" />
+>     <ClInclude Include="TopiHandleNewUserCls.hpp" />
+>     <ClInclude Include="TopiParams.hpp" />
+>     <ClInclude Include="TopiVarScores.hpp" />
+>     <ClInclude Include="Topor.hpp" />
+>     <ClInclude Include="ToporDynArray.hpp" />
+>     <ClInclude Include="ToporExternalTypes.hpp" />
+>     <ClInclude Include="ToporVector.hpp" />
+>     <ClInclude Include="ToporWinAverage.hpp" />
+>   </ItemGroup>
+>   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+>   <ImportGroup Label="ExtensionTargets">
+>   </ImportGroup>
+diff -r repo_original/code/solvers/topor/topor/topor.vcxproj.filters ./code/solvers/topor/topor/topor.vcxproj.filters
+1,107c1,107
+< ﻿<?xml version="1.0" encoding="utf-8"?>
+< <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<   <ItemGroup>
+<     <Filter Include="Source Files">
+<       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+<       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+<     </Filter>
+<     <Filter Include="Header Files">
+<       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+<       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+<     </Filter>
+<     <Filter Include="Resource Files">
+<       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+<       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+<     </Filter>
+<   </ItemGroup>
+<   <ItemGroup>
+<     <ClCompile Include="Main.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="Topi.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiAsg.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiBacktrack.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiBcp.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiCompression.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiConflictAnalysis.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiDebugPrinting.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiDecision.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiRestart.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="TopiWL.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<     <ClCompile Include="Topor.cc">
+<       <Filter>Source Files</Filter>
+<     </ClCompile>
+<   </ItemGroup>
+<   <ItemGroup>
+<     <ClInclude Include="BasicMemoryUsage.h">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="ColorPrint.h">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="Diamond.h">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="SetInScope.h">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TimeMeasure.h">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="BitArray.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TableBitInfo.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="Topi.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TopiGlobal.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TopiHandleNewUserCls.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TopiParams.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="TopiVarScores.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="Topor.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="ToporDynArray.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="ToporExternalTypes.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="ToporVector.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<     <ClInclude Include="ToporWinAverage.hpp">
+<       <Filter>Header Files</Filter>
+<     </ClInclude>
+<   </ItemGroup>
+---
+> ﻿<?xml version="1.0" encoding="utf-8"?>
+> <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>   <ItemGroup>
+>     <Filter Include="Source Files">
+>       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+>       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+>     </Filter>
+>     <Filter Include="Header Files">
+>       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+>       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+>     </Filter>
+>     <Filter Include="Resource Files">
+>       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+>       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+>     </Filter>
+>   </ItemGroup>
+>   <ItemGroup>
+>     <ClCompile Include="Main.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="Topi.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiAsg.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiBacktrack.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiBcp.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiCompression.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiConflictAnalysis.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiDebugPrinting.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiDecision.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiRestart.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="TopiWL.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>     <ClCompile Include="Topor.cc">
+>       <Filter>Source Files</Filter>
+>     </ClCompile>
+>   </ItemGroup>
+>   <ItemGroup>
+>     <ClInclude Include="BasicMemoryUsage.h">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="ColorPrint.h">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="Diamond.h">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="SetInScope.h">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TimeMeasure.h">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="BitArray.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TableBitInfo.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="Topi.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TopiGlobal.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TopiHandleNewUserCls.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TopiParams.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="TopiVarScores.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="Topor.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="ToporDynArray.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="ToporExternalTypes.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="ToporVector.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>     <ClInclude Include="ToporWinAverage.hpp">
+>       <Filter>Header Files</Filter>
+>     </ClInclude>
+>   </ItemGroup>
+diff -r repo_original/code/solvers/topor/topor/topor.vcxproj.user ./code/solvers/topor/topor/topor.vcxproj.user
+1,3c1,3
+< ﻿<?xml version="1.0" encoding="utf-8"?>
+< <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<   <PropertyGroup />
+---
+> ﻿<?xml version="1.0" encoding="utf-8"?>
+> <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+>   <PropertyGroup />
+Only in ./code/solvers/topor/utils: Options.o
+Only in ./code/solvers/topor/utils: System.o
+Only in ./code: time_log
+Only in ./code: tt-open-wbo-inc-Glucose4_1
+Only in ./code: tt-open-wbo-inc-IntelSATSolver
+Only in .: diferencias.txt
+Only in .: make
+Only in .: repo_original
