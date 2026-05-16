@@ -38,12 +38,15 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <random>
 
 #define MAX_CLAUSES 3000000
 
 using namespace openwbo;
 using namespace std;
 
+
+std::mt19937 rng(std::random_device{}());
 
 /*_________________________________________________________________________________________________
   |
@@ -495,7 +498,7 @@ void LinearSUClustering::bmoSearch(){
 		   }
 		   if (Torc::Instance()->GetMsSortLitsStrat() >= 1)
 		   {
-				std::random_shuffle(relLitsSortedIncreasing.begin() + szBefore, relLitsSortedIncreasing.end());   
+				std::shuffle(relLitsSortedIncreasing.begin() + szBefore, relLitsSortedIncreasing.end(), rng);   
 				
 				if (Torc::Instance()->GetMsSortLitsStrat() == 2)
 				{

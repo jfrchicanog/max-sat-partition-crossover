@@ -44,6 +44,8 @@
 
 using namespace openwbo;
 
+std::mt19937 rng(std::random_device{}());
+
 uint64_t OBV::MrsBeaver(Solver * solver, int iterations, int conflicts, PartitionCrossover* crossover){
 
   std::srand ( 1971603567 );
@@ -264,12 +266,12 @@ uint64_t OBV::MrsBeaver(Solver * solver, int iterations, int conflicts, Partitio
 				auto new_current_ub = t % 4 == 0 || t % 4 == 1 ? ums_obv_bs(solver, currOutputs, current_ub, Torc::Instance()->GetPartialSumConflicts(),crossover, ~totSelector) : obv_bs(solver, currOutputs, current_ub, Torc::Instance()->GetPartialSumConflicts(), crossover, ~totSelector);    
 				
 				current_ub = new_current_ub;
-				t % 4 == 0 && t > 0 ? std::random_shuffle(currOutputs.begin(), currOutputs.end()) : std::reverse(currOutputs.begin(), currOutputs.end());   
+				t % 4 == 0 && t > 0 ? std::shuffle(currOutputs.begin(), currOutputs.end(), rng) : std::reverse(currOutputs.begin(), currOutputs.end());   
 		 }
 	 } 
 	 
     
-	t % 4 == 0 && t > 0 ? std::random_shuffle(outputs.begin(), outputs.end()) : std::reverse(outputs.begin(), outputs.end());  
+	t % 4 == 0 && t > 0 ? std::shuffle(outputs.begin(), outputs.end(), rng) : std::reverse(outputs.begin(), outputs.end());  
 
   }
   
