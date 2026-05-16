@@ -238,7 +238,7 @@ void LinearSUClustering::bmoSearch(){
   initRelaxation();
   solver = rebuildSolver();
   int numVars = solver->nVars();
-  printf("Número de variables: %d\n", numVars);
+  printf("c number of variables: %d\n", numVars);
 
     // ====== Construcción ligera del paisaje ======
   EmbeddedLandscape_maxsat landscape(numVars);
@@ -254,7 +254,7 @@ void LinearSUClustering::bmoSearch(){
       //landscape.addClauseweight(varsClause, weight); // ahora sí con peso
       landscape.addClause(varsClause);
   }
-  printf("Paisaje cargado (ligero)\n");
+  printf("c loaded landscape (light)\n");
 
   // ====== Instancia del Partition Crossover ======
   PartitionCrossover crossover(landscape);

@@ -63,7 +63,7 @@ PBSolution PartitionCrossover::recombine(const PBSolution &blue,
                                          const PBSolution &red) 
 {
     auto startTime = std::chrono::high_resolution_clock::now();
-
+    printf("c PX recombining\n");
     const int n = el.getN();
     PBSolution child = red; // Copia inicial de red
 
