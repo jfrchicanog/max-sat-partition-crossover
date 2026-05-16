@@ -29,7 +29,7 @@ CLSIND = uint32_t
 COMPRESS = false
 
 # THE REMAINING OF THE MAKEFILE SHOULD BE LEFT UNCHANGED
-EXEC       = tt-open-wbo-inc-${SOLVERNAME}
+EXEC       = px-tt-open-wbo-inc-${SOLVERNAME}
 ifeq ($(SOLVERDIR),topor)
 	DEPDIR     = topor mtl utils core 
 else
