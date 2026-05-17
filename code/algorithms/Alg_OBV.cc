@@ -642,7 +642,7 @@ void OBV::normalSearch() {
                         PBSolution parent2 = eliteSolutions[selectedIdx].first;
                         uint64_t costParent2 = eliteSolutions[selectedIdx].second;
 
-                        std::cout << " | Interacción: Parent1 idx=0, cost=" << costParent1
+                        std::cout << "c | Interacción: Parent1 idx=0, cost=" << costParent1
                                   << " | Parent2 idx=" << selectedIdx << ", cost=" << costParent2
                                   << " | Diferencia bits=" << bestDiff << std::endl;
 

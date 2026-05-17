@@ -1158,8 +1158,8 @@ void LinearSUClustering::bmoSearch(){
                   PBSolution parent2 = eliteSolutions[selectedIdx].first;
                   uint64_t costParent2 = eliteSolutions[selectedIdx].second;
 
-                  std::cout << " | Interacción: Parent1 idx=0, cost=" << costParent1
-                                  << " | Parent2 idx=" << selectedIdx << ", cost=" << costParent2 << std::endl;
+                  std::cout << "c | Interacción: Parent1 idx=0, cost=" << costParent1
+                                  << "c | Parent2 idx=" << selectedIdx << ", cost=" << costParent2 << std::endl;
 
                   PBSolution child = crossover.recombine(parent1, parent2);
 
