@@ -486,6 +486,19 @@ void OBV::normalSearch() {
 
     // ====== Construcción ligera del paisaje ======
     EmbeddedLandscape_maxsat landscape(numVars);
+    for (int ci = 0; ci < maxsat_formula->nHard(); ++ci) {
+      std::vector<int> varsClause;
+      varsClause.reserve(maxsat_formula->getHardClause(ci).clause.size());
+      for (int li = 0; li < maxsat_formula->getHardClause(ci).clause.size(); ++li) {
+        Lit lit = maxsat_formula->getHardClause(ci).clause[li];
+        int v = var(lit);
+        if (v >= 0 && v < numVars) {
+          int signedLit = sign(lit) ? -(v + 1) : (v + 1);
+          varsClause.push_back(signedLit);
+        }
+      }
+      landscape.addClause(varsClause);
+    }
     for (int ci = 0; ci < maxsat_formula->nSoft(); ++ci) {
         std::vector<int> varsClause;
         varsClause.reserve(maxsat_formula->getSoftClause(ci).clause.size());
