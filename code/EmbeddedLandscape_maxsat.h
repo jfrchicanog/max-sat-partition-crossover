@@ -44,7 +44,7 @@ public:
     double evaluateSubFunctionFlippingVariableWeight(int clauseIdx, int var, const PBSolution& sol) const;
     double evaluateSubFunctionFlippingAllVariablesWeight(int clauseIdx, const PBSolution& sol) const;
 
-    void printSummary(int maxClauses, int maxVars) const;
+    std::string printSummary(int maxClauses = 10, int maxVars = 10) const;
 
 private:
     int nVars;

@@ -513,6 +513,7 @@ void OBV::normalSearch() {
         landscape.addClause(varsClause);
     }
     printf("c loaded landscape (light)\n");
+    printf("%s\n", landscape.printSummary().c_str());
 
     // ====== Instancia del Partition Crossover ======
     PartitionCrossover crossover(landscape);

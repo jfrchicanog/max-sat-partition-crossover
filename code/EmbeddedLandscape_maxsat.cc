@@ -217,24 +217,30 @@ double EmbeddedLandscape_maxsat::evaluateSubFunctionFlippingAllVariablesWeight(
 }
 
 
-void EmbeddedLandscape_maxsat::printSummary(int maxClauses, int maxVars) const {
-    printf("Número de cláusulas: %zu\n", clauses_.size());
+std::string EmbeddedLandscape_maxsat::printSummary(int maxClauses, int maxVars) const {
+    std::string summary = "";
+    summary += "c Número de cláusulas: " + std::to_string(clauses_.size()) + "\n";
     for (size_t i = 0; i < clauses_.size() && i < (size_t)maxClauses; i++) {
-        printf("Cláusula %zu: ", i);
-        for (int v : clauses_[i]) printf("%d ", v);
-        printf("\n");
+        summary += "Cláusula " + std::to_string(i) + ": ";
+        for (int v : clauses_[i]) {
+            summary += std::to_string(v) + " ";
+        }
+        summary += "\n";
     }
 
-    printf("\nInteracciones (hasta 10 variables con interacciones):\n");
+    summary += "\n c Interacciones (hasta " + std::to_string(maxVars) + " variables con interacciones):\n";
     int count = 0;
-    for (int v = 0; v < nVars && count < 10; v++) {
+    for (int v = 0; v < nVars && count < maxVars; v++) {
         if (!interactions_[v].empty()) {
-            printf("Variable %d interactúa con: ", v);
-            for (int u : interactions_[v]) printf("%d ", u);
-            printf("\n");
+            summary += "c Variable " + std::to_string(v) + " interactúa con: ";
+            for (int u : interactions_[v]) {
+                summary += std::to_string(u) + " ";
+            }
+            summary += "\n";
             count++;
         }
     }
+    return summary;
 }
 
 } // namespace openwbo
