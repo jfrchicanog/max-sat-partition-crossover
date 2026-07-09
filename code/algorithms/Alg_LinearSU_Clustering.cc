@@ -248,7 +248,10 @@ void LinearSUClustering::bmoSearch(){
       for (int li = 0; li < maxsat_formula->getSoftClause(ci).clause.size(); ++li) {
           Lit lit = maxsat_formula->getSoftClause(ci).clause[li];
           int v = var(lit);
-          if (v >= 0 && v < numVars) varsClause.push_back(v);
+        if (v >= 0 && v < numVars) {
+          int signedLit = sign(lit) ? -(v + 1) : (v + 1);
+          varsClause.push_back(signedLit);
+        }
       }
       //uint64_t weight = maxsat_formula->getSoftClause(ci).weight;
       //landscape.addClauseweight(varsClause, weight); // ahora sí con peso
