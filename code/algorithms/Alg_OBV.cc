@@ -148,8 +148,8 @@ uint64_t OBV::MrsBeaver(Solver * solver, int iterations, int conflicts, Partitio
 	  }
 
     {
-        std::vector<bool> bits(solver->nVars(), false); 
-        for (int v = 0; v < solver->nVars(); ++v)
+        std::vector<bool> bits(maxsat_formula->nInitialVars(), false); 
+        for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
             bits[v] = solver->model[v] == l_True;
 
         PBSolution sol(bits);
@@ -200,15 +200,15 @@ uint64_t OBV::MrsBeaver(Solver * solver, int iterations, int conflicts, Partitio
                     solver->model.clear();
                     solver->model.resize(solver->nVars());
 
-                    for (int v = 0; v < solver->nVars(); ++v)
+                    for (size_t v = 0; v < childBits.size(); ++v)
                         solver->model[v] = childVec[v];
 
                     solver->model.copyTo(model);
                     new_current_ub = childCostEstimate;
                     oInLatestModel = computeCostModel(model);
 
-                    std::vector<bool> bits(solver->nVars(), false); 
-                    for (int v = 0; v < solver->nVars(); ++v)
+                    std::vector<bool> bits(maxsat_formula->nInitialVars(), false); 
+                    for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                         bits[v] = solver->model[v] == l_True;
                     PBSolution sol(bits);
                     eliteSolutions.push_back({sol, new_current_ub});
@@ -481,7 +481,7 @@ void OBV::normalSearch() {
 
     initRelaxation();
     solver = rebuildSolver();
-    int numVars = solver->nVars();
+    int numVars = maxsat_formula->nInitialVars();
     printf("c number of variables: %d\n", numVars);
 
     // ====== Construcción ligera del paisaje ======
@@ -670,9 +670,9 @@ void OBV::normalSearch() {
                               }
                               uint64_t childCost = computeCostModel(solver->model);
 
-                              std::vector<bool> bits(solver->nVars(), false); 
+                                std::vector<bool> bits(maxsat_formula->nInitialVars(), false); 
 
-                              for (int v = 0; v < solver->nVars(); ++v)
+                                for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                                   bits[v] = solver->model[v] == l_True;
                               PBSolution sol(bits);
                               eliteSolutions.push_back({sol, childCost});

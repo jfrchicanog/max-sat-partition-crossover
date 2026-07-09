@@ -237,7 +237,7 @@ void LinearSUClustering::bmoSearch(){
 
   initRelaxation();
   solver = rebuildSolver();
-  int numVars = solver->nVars();
+  int numVars = maxsat_formula->nInitialVars();
   printf("c number of variables: %d\n", numVars);
 
     // ====== Construcción ligera del paisaje ======
@@ -944,8 +944,8 @@ void LinearSUClustering::bmoSearch(){
                     saveModel(solver->model, oriCost);
                     std::cout << "o " << nuwls_solver.opt_unsat_weight << std::endl;
 
-                    std::vector<bool> bits(solver->nVars(), false);
-                    for (int v = 0; v < solver->nVars(); ++v)
+                    std::vector<bool> bits(maxsat_formula->nInitialVars(), false);
+                    for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                         bits[v] = solver->model[v] == l_True;
 
                     PBSolution sol(bits);
@@ -1018,7 +1018,7 @@ void LinearSUClustering::bmoSearch(){
                         solver->model.clear();
                         solver->model.resize(solver->nVars());
 
-                        for (int v = 0; v < solver->nVars(); ++v)
+                        for (size_t v = 0; v < childBits.size(); ++v)
                             solver->model[v] = childVec[v];
 
                         childCost = computeCostModel(solver->model);
@@ -1067,8 +1067,8 @@ void LinearSUClustering::bmoSearch(){
         //uint64_t originalCost = computeOriginalCost(solver->model);
 		    //if (verbosity > 1) printf("c objective function %d = o %" PRId64 " \n",current_function_id,newCost);
         
-        std::vector<bool> bits(solver->nVars(), false);
-        for (int v = 0; v < solver->nVars(); ++v)
+        std::vector<bool> bits(maxsat_formula->nInitialVars(), false);
+        for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                 bits[v] = solver->model[v] == l_True;
 
         PBSolution sol(bits);
@@ -1197,7 +1197,7 @@ void LinearSUClustering::bmoSearch(){
                       solver->model.clear();
                       solver->model.resize(solver->nVars());
 
-                      for (int v = 0; v < solver->nVars(); ++v)
+                      for (size_t v = 0; v < childBits.size(); ++v)
                         solver->model[v] = childBits[v] ? l_True : l_False;
 
                       childCost = computeOriginalCost(solver->model);

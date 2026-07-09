@@ -328,8 +328,8 @@ lbool MaxSAT::polosat(Solver *solver, vec<Lit> &assumptions, vec<Lit> &obsVecLit
                     std::cout << "o " << nuwls_solver.opt_unsat_weight << std::endl;
                     std::cout << "c " << solver->nVars() << std::endl;
 
-                    std::vector<bool> bits(solver->nVars(), false);
-                    for (int v = 0; v < solver->nVars(); ++v)
+                    std::vector<bool> bits(maxsat_formula->nInitialVars(), false);
+                    for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                         bits[v] = solver->model[v] == l_True;
 
                     PBSolution sol(bits);
@@ -403,7 +403,7 @@ lbool MaxSAT::polosat(Solver *solver, vec<Lit> &assumptions, vec<Lit> &obsVecLit
                         solver->model.clear();
                         solver->model.resize(solver->nVars());
 
-                        for (int v = 0; v < solver->nVars(); ++v)
+                        for (size_t v = 0; v < childBits.size(); ++v)
                           solver->model[v] = childBits[v] ? l_True : l_False;
 
                         childCost = computeCostModel(solver->model);
@@ -461,8 +461,8 @@ lbool MaxSAT::polosat(Solver *solver, vec<Lit> &assumptions, vec<Lit> &obsVecLit
                     saveModel(solver->model, oriCost);
                     std::cout << "o " << nuwls_solver.opt_unsat_weight << std::endl;
 
-                    std::vector<bool> bits(solver->nVars(), false);
-                    for (int v = 0; v < solver->nVars(); ++v)
+                    std::vector<bool> bits(maxsat_formula->nInitialVars(), false);
+                    for (int v = 0; v < maxsat_formula->nInitialVars(); ++v)
                         bits[v] = solver->model[v] == l_True;
 
                     PBSolution sol(bits);
@@ -535,7 +535,7 @@ lbool MaxSAT::polosat(Solver *solver, vec<Lit> &assumptions, vec<Lit> &obsVecLit
                         solver->model.clear();
                         solver->model.resize(solver->nVars());
 
-                        for (int v = 0; v < solver->nVars(); ++v)
+                        for (size_t v = 0; v < childBits.size(); ++v)
                           solver->model[v] = childBits[v] ? l_True : l_False;
 
                         childCost = computeCostModel(solver->model);
