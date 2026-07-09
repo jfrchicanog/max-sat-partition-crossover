@@ -27,15 +27,18 @@ void EmbeddedLandscape_maxsat::addClause(const std::vector<int>& vars) {
     clauses_.push_back(vars);
     int idx = (int)clauses_.size() - 1;
 
-    for (int v : vars) {
+    for (int lit : vars) {
+        int v = std::abs(lit) - 1;
         if (v < 0 || v >= nVars) continue;
         appearsIn_[v].push_back(idx);
     }
 
     for (size_t i = 0; i < vars.size(); i++) {
-        int vi = vars[i];
+        int vi = std::abs(vars[i]) - 1;
+        if (vi < 0 || vi >= nVars) continue;
         for (size_t j = 0; j < vars.size(); j++) {
-            int vj = vars[j];
+            int vj = std::abs(vars[j]) - 1;
+            if (vj < 0 || vj >= nVars) continue;
             if (vi != vj) interactionsSet_[vi].insert(vj);
         }
     }
@@ -48,15 +51,18 @@ void EmbeddedLandscape_maxsat::addClauseweight(const std::vector<int>& vars, uin
     clauseWeights_.push_back(weight);
     int idx = (int)clauses_.size() - 1;
 
-    for (int v : vars) {
+    for (int lit : vars) {
+        int v = std::abs(lit) - 1;
         if (v < 0 || v >= nVars) continue;
         appearsIn_[v].push_back(idx);
     }
 
     for (size_t i = 0; i < vars.size(); i++) {
-        int vi = vars[i];
+        int vi = std::abs(vars[i]) - 1;
+        if (vi < 0 || vi >= nVars) continue;
         for (size_t j = 0; j < vars.size(); j++) {
-            int vj = vars[j];
+            int vj = std::abs(vars[j]) - 1;
+            if (vj < 0 || vj >= nVars) continue;
             if (vi != vj) interactionsSet_[vi].insert(vj);
         }
     }
