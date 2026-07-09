@@ -482,7 +482,7 @@ void OBV::normalSearch() {
     initRelaxation();
     solver = rebuildSolver();
     int numVars = maxsat_formula->nInitialVars();
-    printf("c number of variables: %d\n", numVars);
+    printf("c number of variables: %d hard: %d soft: %d\n", numVars, maxsat_formula->nHard(), maxsat_formula->nSoft());
 
     // ====== Construcción ligera del paisaje ======
     EmbeddedLandscape_maxsat landscape(numVars);
