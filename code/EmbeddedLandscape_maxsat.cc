@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cmath>
+#include <iostream>
 
 namespace openwbo {
 
@@ -29,16 +30,22 @@ void EmbeddedLandscape_maxsat::addClause(const std::vector<int>& vars) {
 
     for (int lit : vars) {
         int v = std::abs(lit) - 1;
-        if (v < 0 || v >= nVars) continue;
+        if (v < 0 || v >= nVars) {
+            std::cerr << "Warning: Variable index " << v << " is out of bounds for nVars = " << nVars << std::endl;
+        }
         appearsIn_[v].push_back(idx);
     }
 
     for (size_t i = 0; i < vars.size(); i++) {
         int vi = std::abs(vars[i]) - 1;
-        if (vi < 0 || vi >= nVars) continue;
+        if (vi < 0 || vi >= nVars) {
+            std::cerr << "Warning: Variable index " << vi << " is out of bounds for nVars = " << nVars << std::endl;
+        }
         for (size_t j = 0; j < vars.size(); j++) {
             int vj = std::abs(vars[j]) - 1;
-            if (vj < 0 || vj >= nVars) continue;
+            if (vj < 0 || vj >= nVars) {
+                std::cerr << "Warning: Variable index " << vj << " is out of bounds for nVars = " << nVars << std::endl;
+            }
             if (vi != vj) interactionsSet_[vi].insert(vj);
         }
     }
@@ -53,16 +60,22 @@ void EmbeddedLandscape_maxsat::addClauseweight(const std::vector<int>& vars, uin
 
     for (int lit : vars) {
         int v = std::abs(lit) - 1;
-        if (v < 0 || v >= nVars) continue;
+        if (v < 0 || v >= nVars) {
+            std::cerr << "Warning: Variable index " << v << " is out of bounds for nVars = " << nVars << std::endl;
+        }
         appearsIn_[v].push_back(idx);
     }
 
     for (size_t i = 0; i < vars.size(); i++) {
         int vi = std::abs(vars[i]) - 1;
-        if (vi < 0 || vi >= nVars) continue;
+        if (vi < 0 || vi >= nVars) {
+            std::cerr << "Warning: Variable index " << vi << " is out of bounds for nVars = " << nVars << std::endl;
+        }
         for (size_t j = 0; j < vars.size(); j++) {
             int vj = std::abs(vars[j]) - 1;
-            if (vj < 0 || vj >= nVars) continue;
+            if (vj < 0 || vj >= nVars) {
+                std::cerr << "Warning: Variable index " << vj << " is out of bounds for nVars = " << nVars << std::endl;
+            }
             if (vi != vj) interactionsSet_[vi].insert(vj);
         }
     }
@@ -221,14 +234,14 @@ std::string EmbeddedLandscape_maxsat::printSummary(int maxClauses, int maxVars) 
     std::string summary = "";
     summary += "c Número de cláusulas: " + std::to_string(clauses_.size()) + "\n";
     for (size_t i = 0; i < clauses_.size() && i < (size_t)maxClauses; i++) {
-        summary += "Cláusula " + std::to_string(i) + ": ";
+        summary += "c Cláusula " + std::to_string(i) + ": ";
         for (int v : clauses_[i]) {
             summary += std::to_string(v) + " ";
         }
         summary += "\n";
     }
 
-    summary += "\n c Interacciones (hasta " + std::to_string(maxVars) + " variables con interacciones):\n";
+    summary += "c Interacciones (hasta " + std::to_string(maxVars) + " variables con interacciones):\n";
     int count = 0;
     for (int v = 0; v < nVars && count < maxVars; v++) {
         if (!interactions_[v].empty()) {

@@ -270,6 +270,7 @@ void LinearSUClustering::bmoSearch(){
       //landscape.addClauseweight(varsClause, weight); // ahora sí con peso
       landscape.addClause(varsClause);
   }
+  landscape.buildInteractionGraph();
   printf("c loaded landscape (light)\n");
   printf("%s\n", landscape.printSummary().c_str());
 

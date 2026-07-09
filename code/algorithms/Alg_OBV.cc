@@ -512,6 +512,7 @@ void OBV::normalSearch() {
         }
         landscape.addClause(varsClause);
     }
+      landscape.buildInteractionGraph();
     printf("c loaded landscape (light)\n");
     printf("%s\n", landscape.printSummary().c_str());
 
