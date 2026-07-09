@@ -326,6 +326,7 @@ lbool MaxSAT::polosat(Solver *solver, vec<Lit> &assumptions, vec<Lit> &obsVecLit
                     auto oriCost = nuwls_solver.opt_unsat_weight;
                     saveModel(solver->model, oriCost);
                     std::cout << "o " << nuwls_solver.opt_unsat_weight << std::endl;
+                    std::cout << "c " << solver->nVars() << std::endl;
 
                     std::vector<bool> bits(solver->nVars(), false);
                     for (int v = 0; v < solver->nVars(); ++v)

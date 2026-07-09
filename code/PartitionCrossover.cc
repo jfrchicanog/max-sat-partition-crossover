@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <queue>
 #include <random>
+#include <iostream>
 
 namespace openwbo {
 
@@ -64,6 +65,8 @@ PBSolution PartitionCrossover::recombine(const PBSolution &blue,
 {
     auto startTime = std::chrono::high_resolution_clock::now();
     printf("c PX recombining\n");
+    std::cout << "c Blue: " << blue << std::endl;
+    std::cout << "c Red:  " << red << std::endl;
     const int n = el.getN();
     PBSolution child = red; // Copia inicial de red
 
@@ -100,7 +103,8 @@ PBSolution PartitionCrossover::recombine(const PBSolution &blue,
 
     auto endTime = std::chrono::high_resolution_clock::now();
     lastRuntime = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count();
-
+    std::cout << "c number of components: " << numberOfComponents << std::endl;	
+    std::cout << "c Child: " << child << std::endl;
     return child;
 }
 

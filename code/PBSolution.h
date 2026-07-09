@@ -2,6 +2,7 @@
 #define PB_SOLUTION_H
 
 #include <vector>
+#include <ostream>
 
 namespace openwbo {
 
@@ -21,6 +22,8 @@ public:
     const std::vector<bool>& getBits() const { return bits; }
     void setBits(const std::vector<bool>& b) { bits = b; }
 };
+
+std::ostream& operator<<(std::ostream& os, const PBSolution& solution);
 }
 
 #endif // PB_SOLUTION_H
